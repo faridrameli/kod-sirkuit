@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CodeCircuit — See What Your Code Does</title>
+<meta name="description" content="Turn any codebase into a circuit board. Click to explore, double-click to play through functions like a game.">
+<!-- Open Graph / Social Media -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://fineraystudio.github.io/kod-sirkuit/">
+<meta property="og:title" content="CodeCircuit — See What Your Code Does">
+<meta property="og:description" content="Turn any codebase into a circuit board. Click to explore, double-click to play through functions like a game.">
+<meta property="og:image" content="https://fineraystudio.github.io/kod-sirkuit/og-image.png">
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="https://fineraystudio.github.io/kod-sirkuit/">
+<meta name="twitter:title" content="CodeCircuit — See What Your Code Does">
+<meta name="twitter:description" content="Turn any codebase into a circuit board. Click to explore, double-click to play through functions like a game.">
+<meta name="twitter:image" content="https://fineraystudio.github.io/kod-sirkuit/og-image.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Space Grotesk', -apple-system, system-ui, sans-serif;
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+  color: #e8eaf0;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+}
+header {
+  text-align: center;
+  margin-bottom: 4rem;
+  padding-top: 2rem;
+}
+.logo {
+  font-size: 3.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1rem;
+  display: inline-block;
+}
+.tagline {
+  font-size: 1.5rem;
+  color: #b8bfd9;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+.description {
+  font-size: 1.1rem;
+  color: #8891b2;
+  max-width: 700px;
+  margin: 0 auto 2.5rem;
+  line-height: 1.8;
+}
+.demos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+.demo-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 2rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+.demo-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(79, 172, 254, 0.5);
+  box-shadow: 0 10px 30px rgba(79, 172, 254, 0.2);
+}
+.demo-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+.demo-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #fff;
+}
+.demo-meta {
+  font-size: 0.9rem;
+  color: #6b7494;
+  margin-bottom: 1rem;
+}
+.demo-desc {
+  color: #a8b1d0;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+}
+.demo-features {
+  list-style: none;
+  margin-bottom: 1.5rem;
+}
+.demo-features li {
+  padding-left: 1.5rem;
+  margin-bottom: 0.5rem;
+  position: relative;
+  color: #8891b2;
+  font-size: 0.95rem;
+}
+.demo-features li:before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: #4facfe;
+}
+.btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: #0a0e27;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+}
+.btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 20px rgba(79, 172, 254, 0.4);
+}
+.features {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  padding: 2.5rem;
+  margin-bottom: 3rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.features h2 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+.feature {
+  padding: 1rem;
+}
+.feature h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: #fff;
+}
+.feature p {
+  color: #8891b2;
+  font-size: 0.95rem;
+}
+footer {
+  text-align: center;
+  padding: 2rem;
+  color: #6b7494;
+  font-size: 0.95rem;
+}
+footer a {
+  color: #4facfe;
+  text-decoration: none;
+}
+footer a:hover {
+  text-decoration: underline;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo">◈ CodeCircuit</div>
+    <div class="tagline">See what your code does</div>
+    <p class="description">Turn any codebase into a circuit board you can explore. Every file becomes a chip, every import a wire — and light shows how the program flows. Try these demos to see it in action.</p>
+  </header>
+
+  <div class="demos">
+    <div class="demo-card" onclick="loadDemo('gabrielecirulli/2048')">
+      <span class="demo-icon">🎮</span>
+      <h3 class="demo-title">2048 Game</h3>
+      <div class="demo-meta">~800 lines · JavaScript · MIT License</div>
+      <p class="demo-desc">The famous sliding puzzle game. See how tile movement, merging logic, and win/lose conditions flow through the code.</p>
+      <ul class="demo-features">
+        <li>Game state management</li>
+        <li>Grid manipulation & collision</li>
+        <li>Score calculation</li>
+        <li>Animation system</li>
+      </ul>
+      <button class="btn">Explore Circuit →</button>
+    </div>
+
+    <div class="demo-card" onclick="loadDemo('taniarascia/snek')">
+      <span class="demo-icon">🐍</span>
+      <h3 class="demo-title">Snake Game</h3>
+      <div class="demo-meta">~500 lines · JavaScript · MIT License</div>
+      <p class="demo-desc">Classic terminal snake. Watch the game loop, collision detection, and snake growth logic light up.</p>
+      <ul class="demo-features">
+        <li>Game loop & timing</li>
+        <li>Movement & direction control</li>
+        <li>Collision detection</li>
+        <li>Food spawning logic</li>
+      </ul>
+      <button class="btn">Explore Circuit →</button>
+    </div>
+
+    <div class="demo-card" onclick="loadDemo('1Marc/modern-todomvc-vanillajs')">
+      <span class="demo-icon">✓</span>
+      <h3 class="demo-title">TodoMVC</h3>
+      <div class="demo-meta">~200 lines · Vanilla JS · MIT License</div>
+      <p class="demo-desc">Clean todo app implementation. See CRUD operations, filtering, and state management in action.</p>
+      <ul class="demo-features">
+        <li>CRUD operations</li>
+        <li>LocalStorage persistence</li>
+        <li>Filter & sort logic</li>
+        <li>Event handling</li>
+      </ul>
+      <button class="btn">Explore Circuit →</button>
+    </div>
+  </div>
+
+  <div class="features">
+    <h2>How It Works</h2>
+    <div class="feature-grid">
+      <div class="feature">
+        <h3>🔌 Board View</h3>
+        <p>Every file is a chip. Click one to light up its connections — amber to what it uses, teal from what uses it.</p>
+      </div>
+      <div class="feature">
+        <h3>🎯 Flow View</h3>
+        <p>Double-click a chip to play through a function like a game. Every decision stops and waits for you.</p>
+      </div>
+      <div class="feature">
+        <h3>⚡ Power On</h3>
+        <p>Start at the entry point and light up everything the code can reach. Spot dead or disconnected code instantly.</p>
+      </div>
+      <div class="feature">
+        <h3>🔍 Step Through</h3>
+        <p>Walk through each line with variables shown. See what every decision depends on.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Kod Sirkuit is a demo of <a href="https://github.com/faridrameli/code-visualizer" target="_blank" rel="noopener">CodeCircuit</a> · <a href="https://github.com/fineraystudio/kod-sirkuit" target="_blank" rel="noopener">View Demo Source</a></p>
+  </footer>
+</div>
+
+<script>
+function loadDemo(repo) {
+  // Redirect to viewer with the repo hash
+  window.location.href = 'viewer.html#' + repo;
+}
+</script>
+</body>
+</html>

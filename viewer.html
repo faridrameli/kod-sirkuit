@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kod Sirkuit — Code Circuit Viewer</title>
+<meta name="description" content="Explore code as a circuit board. See how functions flow, dependencies connect, and logic branches.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="logo">◈</span>CodeCircuit</div>
+  <form id="repoForm" class="repo">
+    <input id="repoInput" placeholder="owner/repo  or  https://github.com/owner/repo" autocomplete="off" spellcheck="false">
+    <button type="submit" class="btn primary">Load repo</button>
+    <label class="btn" title="Pick a project folder on this computer">Open folder<input id="folderInput" type="file" webkitdirectory directory multiple hidden></label>
+    <button type="button" id="demoBtn" class="btn ghost">Demo</button>
+    <button type="button" id="homeBtn" class="btn ghost" title="Your saved projects">☰ Projects</button>
+    <button type="button" id="tokenBtn" class="btn ghost icon" title="GitHub token (optional — for private repos)">🔑</button>
+  </form>
+  <button type="button" id="aiBtn" class="btn ghost hidden" title="Choose and test the AI">🧠 AI</button>
+  <span id="dbBadge" class="dbbadge" title=""></span>
+  <nav class="tabs"><button data-tab="board" class="tab active" title="B">Board</button><button data-tab="flow" class="tab" title="F">Flow</button></nav>
+</header>
+<div id="tokenBar" class="tokenbar hidden">
+  <input id="tokenInput" type="password" placeholder="GitHub personal access token (kept only in this browser)" autocomplete="off">
+  <button id="tokenSave" class="btn">Save</button>
+  <span class="muted">Only needed for private repos. Public repos use 2 API calls each (limit: 60/hour).</span>
+</div>
+<main>
+  <aside id="worldPanel" class="side world hidden">
+    <div id="liveBox" class="livebox hidden">
+      <div class="ptitle"><span class="num">①</span>Your app, live<small id="liveState"></small></div>
+      <div class="liverow"><button id="liveRun" class="btn primary small">▶ Run app</button><input id="liveCmd" list="liveCmds" spellcheck="false" autocomplete="off" title="The command that starts your app"><datalist id="liveCmds"></datalist></div>
+      <div id="livePlaceholder" class="liveph"><div class="phscreen"><b>Your app's screen appears here</b><span>CodeCircuit starts your app with the command above and shows it in this box. Click around in it and the flowchart follows what really runs.</span><button id="livePhRun" class="btn primary">▶ Run app</button></div></div>
+      <div id="liveMsg" class="livemsg"></div>
+      <div id="liveStage" class="livestage"><iframe id="liveFrame" src="about:blank" title="Your running app"></iframe>
+        <div id="gameScreen" class="gamescreen hidden" tabindex="0" title="Click, then play with your keyboard and mouse"><img id="gameImg" alt="" draggable="false"><div id="gameHint" class="gshint">Waiting for the game's first picture…</div></div>
+        <div class="livebar"><label title="When you click in your app, replay it on the flowchart"><input type="checkbox" id="liveFollow" checked> follow my clicks</label><button class="linkbtn" id="liveWide" title="Make the preview bigger or smaller">⤢</button><button class="linkbtn" id="liveReload" title="Reload the page">↻</button><a id="liveOpen" class="linkbtn" target="_blank" rel="noopener" title="Open in its own tab (not recorded)">↗</a></div>
+      </div>
+      <h4>What you did <small>replay any of it</small></h4><div id="liveActs" class="acts"></div>
+      <h4>🌐 API lane</h4><div id="apiLane" class="lane"></div>
+      <details id="liveLogBox"><summary>App log</summary><pre id="liveLog" class="livelog"></pre></details>
+    </div>
+    <div class="ptitle"><span class="num">①</span>UI &amp; World<small>what the outside sees</small></div>
+    <h4>Who starts this?</h4><div id="trigger" class="trigger"></div>
+    <h4>Touched on this run</h4><div id="worldTally" class="tallies"></div>
+    <h4>What happened</h4><div id="worldFeed" class="feed"></div>
+  </aside>
+  <section class="stage">
+    <canvas id="boardCanvas"></canvas>
+    <canvas id="flowCanvas" class="hidden"></canvas>
+    <div id="boardBar" class="bar">
+      <input id="searchInput" placeholder="Find a file…" autocomplete="off">
+      <button id="powerBtn" class="btn primary">⚡ Power on</button>
+      <button id="ambientBtn" class="btn">Ambient: off</button>
+      <button id="apiBtn" class="btn" title="Show which code calls which API route">API wires: on</button>
+      <select id="colorSelect" class="btn"><option value="folder">Colour: folder</option><option value="lang">Colour: language</option><option value="io">Colour: what it touches</option></select>
+      <button id="fitBtn" class="btn ghost">Fit</button>
+    </div>
+    <div id="flowBar" class="bar hidden">
+      <span class="plabel"><span class="num">②</span>Flow</span>
+      <div id="crumbs" class="crumbs"></div>
+      <select id="fnSelect" class="btn" title="Pick a function in this file"></select>
+      <button id="playBtn" class="btn primary">▶ Start</button>
+      <button id="stepBtn" class="btn" title="Pause after every single step">Step-by-step: off</button>
+      <button id="flowFitBtn" class="btn ghost">Fit</button>
+      <div id="planStrip" class="planstrip hidden"></div>
+    </div>
+    <div id="dock" class="dock hidden"></div>
+    <div class="speed"><span>Speed</span><input id="speedInput" type="range" min="0.2" max="3" step="0.1" value="1"></div>
+    <div id="legend" class="legend"></div>
+    <div id="tooltip" class="tooltip hidden"></div>
+    <div id="toast" class="toast"></div>
+    <div id="overlay" class="overlay">
+      <div class="welcome">
+        <div class="glyph"><span></span><span></span><span></span></div>
+        <h1>See what the code <em>does</em>.</h1>
+        <p>Paste any GitHub repo above, or open a folder from your computer. Every file becomes a chip on a circuit board, every import a wire — and light shows how the program flows. Double-click a chip to <b>play</b> a function like a game: the light stops at every decision and you choose the path, while the code, its logic and everything it touches on the outside update around it.</p>
+        <div class="row center"><button class="btn primary big" onclick="App.loadDemo()">Try the demo</button><button class="btn big" onclick="document.getElementById('repoInput').focus()">Paste a repo</button></div>
+        <div id="status" class="status"></div>
+        <div id="home" class="home"></div>
+        <p class="tiny">Your code stays on this computer. GitHub repos are downloaded straight from GitHub and never sent anywhere else.</p>
+      </div>
+    </div>
+  </section>
+  <aside id="panel" class="panel"></aside>
+  <aside id="codePanel" class="side codep hidden">
+    <div class="ptitle"><span class="num">④</span>Logic<small>what this step means</small></div>
+    <div id="logic" class="logic"></div>
+    <div id="aiBox" class="aibox"></div>
+    <div class="ptitle"><span class="num">③</span>Code<small id="codeTitle"></small></div>
+    <div id="codeView" class="code"></div>
+    <div id="fnNoteWrap"></div>
+  </aside>
+</main>
+<div id="aiModal" class="modal hidden"><div class="mbox"><div class="mhead"><b>🧠 AI brain</b><button class="linkbtn" onclick="Ai.close()">✕ close</button></div><div class="mbody"></div></div></div>
+<script src="js/util.js"></script>
+<script src="js/api.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/parse.js"></script>
+<script src="js/loader.js"></script>
+<script src="js/sample.js"></script>
+<script src="js/board.js"></script>
+<script src="js/explain.js"></script>
+<script src="js/flow.js"></script>
+<script src="js/game.js"></script>
+<script src="js/live.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
